@@ -1,0 +1,209 @@
+Создание таблицы:
+---------------------------------------------------
+CREATE TABLE articles ( id int PRIMARY KEY AUTO_INCREMENT UNSIGNED, title varchar(255) NOT NULL, content text )
+***********************************************************************************************
+CREATE TABLE `mvc`.`users` ( `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'BUGAGA' ,  `email` VARCHAR(255) NOT NULL ,  `age` INT NOT NULL DEFAULT '18' ,  `gender` ENUM('male','female') NULL ,  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,    PRIMARY KEY  (`id`)) ENGINE = InnoDB;
+CREATE TABLE auto( id int UNSIGNED PRIMARY KEY AUTO_INCREMENT , marka varchar(64), year int, color varchar(64) )
+
+--------------------------------------------------------
+DROP TABLE auto---удаление таблицы, auto---название таблицы
+
+Вставка строк:
+--------------------------------------------------------------------------------
+INSERT INTO users VALUES (1,'sdf@fgdg',22,'male',12121221)
+INSERT INTO users(email, gender) VALUES ('sdf@fgdg','male')
+INSERT INTO auto(marka,year) VALUES('Tesla',2020),('BMW',2010),('Opel',2000)
+INSERT INTO auto(marka,year,color) VALUES('Ford',1905,'black'),('Mazda',2020,'white')
+
+
+Удаление строк
+------------------------------------------------------------------------------------------
+DELETE FROM auto;---удалит все строки из таблицы auto
+TRUNCATE auto;----- удалит все строки из таблицы auto и сбросит все id
+DELETE FROM auto
+WHERE id=3;
+------------------------------------------------------------
+Условия(операторы которые используются): = ,<, > ,!=, >=,<= 
+-------------------------------------------------------------
+*****Удалить авто старше 2000-го года******
+DELETE FROM auto
+WHERE year<2000;
+
+
+Проверка на равенство NULL:
+*****Удалить авто с неизвестным цветом******
+DELETE FROM auto
+WHERE color IS NULL;
+
+Проверка на неравенство NULL:
+DELETE FROM auto
+WHERE color IS NOT NULL;
+
+****Удалить авто Mazda с неизвестным цветом*****
+DELETE FROM auto
+WHERE color IS NOT NULL AND marka='Mazda';
+
+
+
+-------------------------------------------
+Обновление данных в строках
+-------------------------------------------
+UPDATE auto
+SET year=2022;-------обновит все строки
+
+UPDATE auto
+SET year=1908, color='red'
+WHERE marka='FORD';
+
+UPTADE auto
+SET year=year+1 -----уыеличить у всех год на 1
+
+
+
+Выборка данных
+-------------------------------------------
+SELECT * FROM auto;   выбирает все столбцы и все строки;
+SELECT marka,year FROM auto;-----выбор определённых столбцов
+
+SELECT marka,year
+FROM auto
+WHERE year>=2000;
+
+Принадлежность к диапазону . BETWEEN
+---------------------------------------------------------------
+Вариант 1
+авто с 2000 по 2020
+SELECT marka,year
+FROM auto
+WHERE year>=2000 AND year<=2020;
+Вариант 2
+SELECT marka,year
+FROM auto
+WHERE year BETWEEN 2000 AND 2020;
+
+Принадлежность к диапазону . IN 
+-------------------------------------------------------------
+авто нескольких цветов
+Вариант 1
+SELECT marka,color
+FROM auto
+WHERE color='black' OR color='red' OR color='gray' OR color 'blue'  
+Вариант 2
+SELECT marka,color
+FROM auto
+WHERE color IN ('black','red','gray','blue'); 
+
+Сортировка результирующей таблицы. ORDER BY
+------------------------------------------------------
+SELECT name,price 
+FROM books 
+WHERE price<20 AND category='Учебники'
+ORDER BY price;
+
+ASC-от меньшего к большему
+DESK -от большего к меньшему
+
+SELECT name,price 
+FROM books 
+WHERE price<20 AND category='Учебники'
+ORDER BY price DESC;
+
+SELECT name,category,price 
+FROM books 
+WHERE price<20 AND category IS NOT NULL
+ORDER BY category,price;
+
+В ORDER BY можно указывать не название столюцов а их порядковый номер.
+
+SELECT name,category,price 
+FROM books 
+WHERE price<20 AND category IS NOT NULL
+ORDER BY 2,3;
+
+SELECT TRIM(name),price 
+FROM books
+ORDER BY TRIM(name);
+
+Псевдонимы столбцов
+----------------------------------------------
+SELECT TRIM(name) AS 'book',price 
+FROM books
+ORDER BY book;
+
+Поиск по неполным данным. LIKE
+-------------------------------------------
+SELECT TRIM(name) AS 'book',price 
+FROM books
+WHERE name LIKE '%HTML%' AND name LIKE '%CSS%'
+ORDER BY book;
+
+SELECT TRIM(name) AS 'book',price 
+FROM books
+WHERE name NOT LIKE '%HTML%' 
+ORDER BY book;
+
+Агрегирующие функции
+--------------------------------
+SUM,MIN,MAX,AVG,COUNT
+в параметре принимают название столбца. Возвращают ОДНО значение.
+ 
+SUM,AVG ---работают только с числами.
+
+COUNT(*) количество всех строк
+COUNT(название_столбца) количество всех строк, имеющих не NULL значение
+
+SELECT SUM(price) AS 'sum'
+FROM books;
+
+SELECT SUM(price) AS 'sum', MIN(price) AS 'min',MAX(price) AS 'max',AVG(price) AS 'avg',COUNT(price) AS 'count'
+FROM books;
+
+
+количество всех книг и количество выпущенных в категории
+SELECT COUNT(*) AS 'total', COUNT(dateizd) AS 'published'
+FROM books;
+WHERE category='Учебники';
+
+//не сработатет "вывести название и цену самой дешёвой книги"
+SELECT MIN(price),name FROM books
+
+Удаление повторяющихся строк. DISTINCT
+------------------------------------------------
+SELECT DISTINCT category FROM books;
+SELECT DISTINCT category,themes FROM books;
+
+
+
+
+Групировка строк. GROUP BY
+------------------------------------------
+SELECT  category 
+FROM books
+GROUP BY category;
+
+При использовании агрегирующей функции и GROUP BY функция будет вызываться для каждой группы строк!
+
+Количество книг в каждой категории 
+SELECT COUNT(*) AS 'total',category--------вывели два столюца количество всех строк и название категорий
+FROM books
+WHERE price<20
+GROUP BY category;
+
+Максимальная цена по каждому издательству,издательства отсортировать по алфавиту
+SELECT MAX(price) AS 'price',izd AS 'company'
+FROM books
+GROUP BY izd
+ORDER BY izd;
+
+Условия для группы строк. HAVING
+---------------------------------------------
+Издательства у которых средняя цена книг больше 20-таблицы
+
+SELECT AVG(price) AS 'avg', izd
+FROM books
+GROUP BY izd
+HAVING avg>20; 
+
+
+
+
